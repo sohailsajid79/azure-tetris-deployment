@@ -75,3 +75,20 @@ variable "tenant_id" {
   type        = string
   sensitive   = true
 }
+
+variable "cloudflare_email" {
+  description = "Email address for Cloudflare account"
+  sensitive   = true
+
+}
+
+variable "cloudflare_api_token" {
+  description = "API token for Cloudflare"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_zone" {
+  description = "Domain name"
+  type        = string
+}

@@ -54,4 +54,13 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   provision_vm_agent = true
+  custom_data = base64encode(
+    <<-EOT
+      #!/bin/bash
+      sudo apt update
+      sudo apt install -y docker.io
+      sudo systemctl start docker
+      sudo systemctl enable docker
+    EOT
+  )
 }
