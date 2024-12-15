@@ -57,10 +57,34 @@ resource "azurerm_linux_virtual_machine" "vm" {
   custom_data = base64encode(
     <<-EOT
       #!/bin/bash
+
       sudo apt update
-      sudo apt install -y docker.io
+      sudo apt install docker.io -y
       sudo systemctl start docker
       sudo systemctl enable docker
+      sudo usermod -aG docker azureadmin
+
+      sudo apt install nginx -y
+      sudo systemctl start nginx
+      sudo systemctl enable nginx
+
+      # Set up basic NGINX configuration
+      sudo bash -c 'cat > /etc/nginx/sites-available/tetris <<EOF
+      server {
+          listen 80;
+          server_name tetris.sohailsajid.dev;
+
+          location / {
+              proxy_pass http://127.0.0.1:8080;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+          }
+      }
+      EOF'
+
+      sudo ln -s /etc/nginx/sites-available/tetris /etc/nginx/sites-enabled/
+      sudo nginx -t
+      sudo systemctl restart nginx
     EOT
-  )
+)
 }
