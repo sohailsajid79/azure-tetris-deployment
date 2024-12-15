@@ -1,1 +1,6 @@
 node_modules/
+.terraform
+.terraform.lock.hcl
+terraform.tfvars
+id_rsa
+id_rsa.pub
