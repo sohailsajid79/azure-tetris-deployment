@@ -1,0 +1,149 @@
+name: Deploy Tetris Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Docker Installation
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: azureadmin
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            sudo apt update
+            if ! [ -x "$(command -v docker)" ]; then
+              echo "Docker is not installed. Installing Docker..."
+              sudo apt install -y docker.io
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker azureadmin
+            else
+              echo "Docker is already installed."
+            fi
+            docker --version
+
+  scan-docker-image:
+    runs-on: ubuntu-latest
+    needs: validate-docker
+    steps:
+      - name: Scan Docker Image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sajid79/tetris-js-app:amd64
+          format: table
+          severity: HIGH,CRITICAL
+
+  validate-nginx:
+    runs-on: ubuntu-latest
+    needs: scan-docker-image
+    steps:
+      - name: Validate NGINX Installation
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: azureadmin
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            if ! [ -x "$(command -v nginx)" ]; then
+              echo "NGINX is not installed. Installing NGINX..."
+              sudo apt install -y nginx
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+            else
+              echo "NGINX is already installed."
+            fi
+            sudo systemctl status nginx
+
+  deploy-application:
+    runs-on: ubuntu-latest
+    needs: validate-nginx
+    steps:
+      - name: Deploy Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: azureadmin
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            docker pull sajid79/tetris-js-app:amd64
+            docker run -d -p 8080:80 sajid79/tetris-js-app:amd64
+            sleep 10
+
+  configure-nginx:
+    runs-on: ubuntu-latest
+    needs: deploy-application
+    steps:
+      - name: Configure NGINX
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: azureadmin
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            echo "server {
+                listen 80;
+                server_name tetris.sohailsajid.dev;
+
+                location / {
+                    proxy_pass http://127.0.0.1:8080;
+                    proxy_set_header Host \$host;
+                    proxy_set_header X-Real-IP \$remote_addr;
+                }
+            }" | sudo tee /etc/nginx/sites-available/tetris
+            sudo ln -sf /etc/nginx/sites-available/tetris /etc/nginx/sites-enabled/
+            sudo nginx -t
+            sudo systemctl restart nginx
+
+  # Let’s Encrypt SSL/TLS certificates
+  configure-ssl:
+    runs-on: ubuntu-latest
+    needs: configure-nginx
+    steps:
+      - name: Configure SSL with Certbot
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: azureadmin
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            sudo apt install -y certbot python3-certbot-nginx
+            sudo certbot --nginx -d tetris.sohailsajid.dev --non-interactive --agree-tos --email sohailsajid023@outlook.com
+            sudo nginx -t
+            sudo systemctl restart nginx
+
+  verify-deployment:
+    runs-on: ubuntu-latest
+    needs: configure-ssl
+    steps:
+      - name: Verify Deployment
+        run: |
+          curl -f https://tetris.sohailsajid.dev || exit 1
+          echo "Application is running at https://tetris.sohailsajid.dev"
+
+  create-pr:
+    runs-on: ubuntu-latest
+    needs: verify-deployment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Deploy Tetris Application"
+          branch: pr-deploy-tetris
+          title: "Deploy Tetris Application"
+          body: |
+            This pull request merges the deployment changes for the Tetris application into the main branch.
