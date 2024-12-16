@@ -54,7 +54,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   provision_vm_agent = true
-  custom_data = base64encode(
+ custom_data = base64encode(
     <<-EOT
       #!/bin/bash
 
@@ -68,23 +68,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
       sudo systemctl start nginx
       sudo systemctl enable nginx
 
-      # Set up basic NGINX configuration
-      sudo bash -c 'cat > /etc/nginx/sites-available/tetris <<EOF
-      server {
-          listen 80;
-          server_name tetris.sohailsajid.dev;
-
-          location / {
-              proxy_pass http://127.0.0.1:8080;
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-          }
-      }
-      EOF'
-
-      sudo ln -s /etc/nginx/sites-available/tetris /etc/nginx/sites-enabled/
-      sudo nginx -t
-      sudo systemctl restart nginx
+      sudo apt install certbot python3-certbot-nginx -y
     EOT
-)
+  )
 }
