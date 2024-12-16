@@ -18,9 +18,11 @@ The project demonstrates the deployment of a Tetris web application using **Terr
 
 ## Project Overview
 
+![app-demo](./assets/app-demo.gif)
+
 The objective of this project was in response to a technical challenge: setting up a Linux environment on Azure to host a web application. The application was deployed on an Azure Linux Virtual Machine (VM) using Terraform to automate the provisioning of cloud resources. I decided on Terraform because of its ability to manage infrastructure as code, enabling repeatable and scalable deployments.
 
-Docker was utilised to containerise the application, ensuring consistency and portability across environments. In doing so, it simplified application packaging and dependency management
+Docker was utilised to containerise the application, ensuring consistency and portability across environments. In doing so, it simplified application packaging and dependency management.
 
 NGINX was configured to efficiently serve the application and provide HTTPS for secure communication, enhancing performance and security.
 
@@ -62,7 +64,7 @@ The diagram above showcases the Terraform-managed infrastructure deployed on **A
    Segments the Virtual Network to host the Virtual Machine and associated resources.
 
 4. **Network Interface**
-   Connects the VMto the Subnet and associates the Public IP.
+   Connects the VM to the Subnet and associates the Public IP.
 
 5. **Network Security Group (NSG)**  
    Controls inbound and outbound traffic, allowing access only to essential ports:
@@ -108,6 +110,10 @@ NGINX acts as a reverse proxy to route traffic to the Docker container and serve
 
 - HTTP traffic (port 80) is redirected to HTTPS (port 443).
 - HTTPS is configured using certificates from Let's Encrypt
+
+```
+sudo vi /etc/nginx/sites-available/tetris
+```
 
 ```
 # HTTP server block: Redirect HTTP to HTTPS
