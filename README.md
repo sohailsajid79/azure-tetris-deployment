@@ -161,7 +161,9 @@ sudo certbot --nginx -d tetris.sohailsajid.dev --non-interactive --agree-tos --e
 
 ## GitHub Actions Workflow
 
-The deploy-application.yaml workflow automates the deployment process, ensuring an efficient and consistent pipeline for the Tetris Application. The workflow is triggered manually using `workflow_dispatch` and performs the following key steps:
+[![Deploy Tetris Application](https://github.com/sohailsajid79/azure-tetris-deployment/actions/workflows/deploy-application.yaml/badge.svg)](https://github.com/sohailsajid79/azure-tetris-deployment/actions/workflows/deploy-application.yaml)
+
+The deploy-application.yaml workflow automates the deployment process, ensuring an efficient and consistent pipeline for the Tetris Application. The workflow is triggered automatically using `push` and performs the following key steps:
 
 1. Validation:
 
