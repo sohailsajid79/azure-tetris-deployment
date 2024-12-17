@@ -147,6 +147,10 @@ server {
 }
 ```
 
+```
+sudo ln -s /etc/nginx/sites-available/tetris /etc/nginx/sites-enabled/
+```
+
 ## SSL Configuration with Certbot
 
 I used Certbot to generate SSL/TLS certificates for HTTPS:
@@ -156,7 +160,20 @@ sudo apt install -y certbot python3-certbot-nginx
 ```
 
 ```
-sudo certbot --nginx -d tetris.sohailsajid.dev --non-interactive --agree-tos --email sohailsajid023@outlook.com
+sudo certbot --nginx -d tetris.sohailsajid.dev --non-interactive --agree-tos --email sohailsajid023@outlook.com --staging
+```
+
+I validated the SSL configuration by checking the related files:
+
+```
+ls -l /etc/letsencrypt/live/tetris.sohailsajid.dev/
+ls -l /etc/letsencrypt/options-ssl-nginx.conf
+ls -l /etc/letsencrypt/ssl-dhparams.pem
+```
+
+```
+sudo nginx -t
+sudo systemctl restart nginx
 ```
 
 ## GitHub Actions Workflow
