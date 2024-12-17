@@ -4,7 +4,7 @@ resource "cloudflare_record" "subdomain" {
   type    = "A"
   value   = azurerm_public_ip.public_ip.ip_address
   ttl     = 1
-  proxied = true
+  proxied = false
 }
 
 data "cloudflare_zones" "main" {
