@@ -95,19 +95,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Rebase dev onto main
-        run: |
-          git fetch origin
-          git checkout dev
-          git rebase origin/main
-          git push origin dev --force
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.PAT_TOKEN }}
           branch: dev
           base: main
+          commit-message: "automated PR"
           title: "Deploy Tetris Application"
           body: |
             This PR merges deployment changes for the dev branch into the main branch.
