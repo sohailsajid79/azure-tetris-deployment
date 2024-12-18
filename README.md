@@ -160,7 +160,7 @@ sudo apt install -y certbot python3-certbot-nginx
 ```
 
 ```
-sudo certbot --nginx -d tetris.sohailsajid.dev --non-interactive --agree-tos --email sohailsajid023@outlook.com --staging
+sudo certbot --nginx -d tetris.sohailsajid.dev --non-interactive --agree-tos --email sohailsajid023@outlook.com
 ```
 
 I validated the SSL configuration by checking the related files:
