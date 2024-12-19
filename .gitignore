@@ -4,3 +4,5 @@ node_modules/
 terraform.tfvars
 id_rsa
 id_rsa.pub
+.DS_Store
+terraform.tfstate
