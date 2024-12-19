@@ -95,13 +95,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+      - name: GitHub Action for Creating Pull Requests
+        uses: devops-infra/action-pull-request@v0.5.5
         with:
-          token: ${{ secrets.PAT_TOKEN }}
-          branch: dev
-          base: main
-          commit-message: "automated PR"
-          title: "Deploy Tetris Application"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: dev
+          target_branch: main
+          title: "Automated PR"
           body: |
-            This PR merges deployment changes for the dev branch into the main branch.
+            This PR merges deployment changes from the `dev` branch into the `main` branch.
