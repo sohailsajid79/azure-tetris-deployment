@@ -101,7 +101,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           source_branch: dev
           target_branch: main
-          title: "Automated PR"
+          title: "Create Pull Request"
           body: |
             This PR merges deployment changes from the `dev` branch into the `main` branch.
           allow_no_diff: true
