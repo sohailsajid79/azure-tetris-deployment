@@ -2,7 +2,7 @@ name: Deploy Tetris Application
 on:
   push:
     branches:
-      - dev
+      - main
 
   # workflow_dispatch:
   #   inputs:
