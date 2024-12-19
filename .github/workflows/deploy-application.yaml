@@ -2,7 +2,7 @@ name: Deploy Tetris Application
 on:
   push:
     branches:
-      - main
+      - dev
 
   # workflow_dispatch:
   #   inputs:
@@ -104,3 +104,4 @@ jobs:
           title: "Automated PR"
           body: |
             This PR merges deployment changes from the `dev` branch into the `main` branch.
+          allow_no_diff: true
